@@ -40,7 +40,6 @@ async function removeContact(contactId) {
   await fs.writeFile(contactsPath, JSON.stringify(contactsArr, null, 2));
   return deletedContact;
 }
-removeContact("e6ywwRe4jcqxXfCZOj_1e");
 
 const contactsActions = {
   listContacts,
