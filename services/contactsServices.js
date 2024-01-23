@@ -13,7 +13,9 @@ const listContacts = async () => {
 async function getContactById(contactId) {
   const contactsArr = await listContacts();
   const findedContact = contactsArr.find((contact) => contact.id === contactId);
-  if (!findedContact) return null;
+  if (!findedContact) {
+    return null;
+  }
 
   return findedContact;
 }
@@ -35,10 +37,29 @@ async function addContact(name, email, phone) {
 async function removeContact(contactId) {
   const contactsArr = await listContacts();
   const index = contactsArr.findIndex((contact) => contact.id === contactId);
-  if (index === -1) return null;
+  if (index === -1) {
+    return null;
+  }
   const [deletedContact] = contactsArr.splice(index, 1);
   await fs.writeFile(contactsPath, JSON.stringify(contactsArr, null, 2));
   return deletedContact;
+}
+
+async function updateContact(contactId, data) {
+  const contactsArr = await listContacts();
+  const index = contactsArr.findIndex((contact) => contact.id === contactId);
+  if (index === -1) {
+    return null;
+  }
+  const updatedContact = contactsArr.find(
+    (contact) => contact.id === contactId
+  );
+
+  contactsArr[index] = { contactId, ...updatedContact, ...data };
+
+  await fs.writeFile(contactsPath, JSON.stringify(contactsArr, null, 2));
+  console.log(contactsArr[index]);
+  return contactsArr[index];
 }
 
 const contactsActions = {
@@ -46,6 +67,7 @@ const contactsActions = {
   getContactById,
   addContact,
   removeContact,
+  updateContact,
 };
 
 export default contactsActions;
