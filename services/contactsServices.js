@@ -5,62 +5,49 @@ import { nanoid } from "nanoid";
 const contactsPath = path.resolve("./db/contacts.json");
 
 const listContacts = async () => {
-  const results = await fs.readFile(contactsPath);
-  const contactsArr = JSON.parse(results);
-  return contactsArr;
+  const contacts = await fs.readFile(contactsPath);
+  return JSON.parse(contacts);
 };
 
-async function getContactById(contactId) {
-  const contactsArr = await listContacts();
-  const findedContact = contactsArr.find((contact) => contact.id === contactId);
-  if (!findedContact) {
-    return null;
-  }
+const getContactById = async (contactId) => {
+  const contacts = await listContacts();
+  const findedContact = contacts.find((contact) => contact.id === contactId);
+  return findedContact || null;
+};
 
-  return findedContact;
-}
-
-async function addContact(name, email, phone) {
-  const contactsArr = await listContacts();
+const addContact = async (data) => {
+  const contacts = await listContacts();
   const newContact = {
     id: nanoid(),
-    name,
-    email,
-    phone,
+    ...data,
   };
-  contactsArr.push(newContact);
-  await fs.writeFile(contactsPath, JSON.stringify(contactsArr));
-
+  contacts.push(newContact);
+  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
   return newContact;
-}
+};
 
-async function removeContact(contactId) {
-  const contactsArr = await listContacts();
-  const index = contactsArr.findIndex((contact) => contact.id === contactId);
+const removeContact = async (contactId) => {
+  const contacts = await listContacts();
+  const index = contacts.findIndex((contact) => contact.id === contactId);
   if (index === -1) {
     return null;
   }
-  const [deletedContact] = contactsArr.splice(index, 1);
-  await fs.writeFile(contactsPath, JSON.stringify(contactsArr, null, 2));
+  const [deletedContact] = contacts.splice(index, 1);
+  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
   return deletedContact;
-}
+};
 
-async function updateContact(contactId, data) {
-  const contactsArr = await listContacts();
-  const index = contactsArr.findIndex((contact) => contact.id === contactId);
+const updateContact = async (contactId, data) => {
+  const contacts = await listContacts();
+  const index = contacts.findIndex((contact) => contact.id === contactId);
   if (index === -1) {
     return null;
   }
-  const updatedContact = contactsArr.find(
-    (contact) => contact.id === contactId
-  );
-
-  contactsArr[index] = { contactId, ...updatedContact, ...data };
-
-  await fs.writeFile(contactsPath, JSON.stringify(contactsArr, null, 2));
-  console.log(contactsArr[index]);
-  return contactsArr[index];
-}
+  const updatedContact = contacts.find((contact) => contact.id === contactId);
+  contacts[index] = { contactId, ...updatedContact, ...data };
+  await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+  return contacts[index];
+};
 
 const contactsActions = {
   listContacts,
