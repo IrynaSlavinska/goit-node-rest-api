@@ -15,7 +15,7 @@ export const getOneContact = async (req, res, next) => {
     const { id } = req.params;
     const contact = await contactsService.getContactById(id);
     if (!contact) {
-      throw new HttpError(404, "Not found");
+      throw HttpError(404, "Not found");
     }
     res.status(200).json(contact);
   } catch (error) {
@@ -28,7 +28,7 @@ export const deleteContact = async (req, res, next) => {
     const { id } = req.params;
     const deletedContact = await contactsService.removeContact(id);
     if (!deletedContact) {
-      throw new HttpError(404, "Not found");
+      throw HttpError(404, "Not found");
     }
     res.status(200).json(deletedContact);
     return;
@@ -50,12 +50,12 @@ export const updateContact = async (req, res, next) => {
   try {
     const keys = Object.keys(req.body);
     if (keys.length === 0) {
-      throw new HttpError(400, "Body must have at least one field");
+      throw HttpError(400, "Body must have at least one field");
     }
     const { id } = req.params;
     const updatedContact = await contactsService.updateContact(id, req.body);
     if (!updatedContact) {
-      throw new HttpError(404);
+      throw HttpError(404);
     }
     res.status(201).json(updatedContact);
   } catch (error) {
