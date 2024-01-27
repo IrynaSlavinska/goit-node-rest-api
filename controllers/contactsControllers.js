@@ -57,7 +57,7 @@ export const updateContact = async (req, res, next) => {
     if (!updatedContact) {
       throw HttpError(404);
     }
-    res.status(201).json(updatedContact);
+    res.status(200).json(updatedContact);
   } catch (error) {
     next(error);
   }
