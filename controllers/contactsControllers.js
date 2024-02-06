@@ -6,8 +6,7 @@ import {
   updateContact,
   updateStatusContact,
 } from "../services/contactsServices.js";
-import HttpError from "../helpers/HttpError.js";
-import catchAsync from "../helpers/catchAsync.js";
+import { catchAsync, HttpError } from "../helpers/index.js";
 
 export const getAllContacts = catchAsync(async (req, res) => {
   const result = await getAll();
