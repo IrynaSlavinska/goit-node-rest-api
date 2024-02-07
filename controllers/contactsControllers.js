@@ -4,7 +4,25 @@ import { catchAsync, HttpError } from "../helpers/index.js";
 export const getAllContacts = catchAsync(async (req, res) => {
   const { _id: owner } = req.user;
   const { page = 1, limit = 10 } = req.query;
+
+  const keys = Object.keys(req.query);
+  const favoriteQuery = keys.some((key) => key === "favorite");
+  console.log(favoriteQuery);
+
   const skip = (page - 1) * limit;
+
+  if (favoriteQuery) {
+    const result = await Contact.find(
+      { favorite: true, owner },
+      "-createdAt -updatedAt",
+      {
+        skip,
+        limit,
+      }
+    ).populate("owner", "name email");
+    res.status(200).json(result);
+    return;
+  }
 
   const result = await Contact.find({ owner }, "-createdAt -updatedAt", {
     skip,
