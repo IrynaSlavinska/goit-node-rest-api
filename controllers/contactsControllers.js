@@ -7,24 +7,18 @@ export const getAllContacts = catchAsync(async (req, res) => {
 
   const keys = Object.keys(req.query);
   const favoriteQuery = keys.some((key) => key === "favorite");
-  console.log(favoriteQuery);
 
   const skip = (page - 1) * limit;
+  
+  const opt = {
+    owner,
+  };
 
   if (favoriteQuery) {
-    const result = await Contact.find(
-      { favorite: true, owner },
-      "-createdAt -updatedAt",
-      {
-        skip,
-        limit,
-      }
-    ).populate("owner", "name email");
-    res.status(200).json(result);
-    return;
+    opt.favorite = req.query.favorite;
   }
 
-  const result = await Contact.find({ owner }, "-createdAt -updatedAt", {
+  const result = await Contact.find(opt, "-createdAt -updatedAt", {
     skip,
     limit,
   }).populate("owner", "name email");
@@ -91,12 +85,6 @@ export const updateContactById = catchAsync(async (req, res) => {
 });
 
 export const updateFavorite = catchAsync(async (req, res) => {
-  const keys = Object.keys(req.body);
-
-  if (keys.length === 0) {
-    throw HttpError(400, "Missing field favorite");
-  }
-
   const { _id: owner } = req.user;
 
   const result = await Contact.findByIdAndUpdate(req.params.id, req.body, {

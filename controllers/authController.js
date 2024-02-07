@@ -73,12 +73,6 @@ export const getCurrent = catchAsync(async (req, res) => {
 });
 
 export const changeSubType = catchAsync(async (req, res) => {
-  const keys = Object.keys(req.body);
-
-  if (keys.length === 0) {
-    throw HttpError(400, "Missing field subscription");
-  }
-
   const result = await User.findByIdAndUpdate(req.user._id, req.body, {
     new: true,
   });
