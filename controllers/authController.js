@@ -98,6 +98,10 @@ export const updateAvatarCtrl = catchAsync(async (req, res) => {
   const { _id: id } = req.user;
   const { path: tempUpload, originalname } = req.file;
 
+  if (!req.user) {
+    throw HttpError(401)
+  }
+
   const filename = `${id}_${originalname}`;
   const resultUpload = path.resolve(avatarDir, filename);
   await fs.rename(tempUpload, resultUpload);
