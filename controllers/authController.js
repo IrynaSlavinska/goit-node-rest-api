@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
 import path from "path";
 import fs from "fs/promises";
+import Jimp from "jimp";
 
 import { User } from "../models/userModel.js";
 import { catchAsync, HttpError } from "../helpers/index.js";
@@ -96,14 +97,18 @@ export const changeSubType = catchAsync(async (req, res) => {
 
 export const updateAvatarCtrl = catchAsync(async (req, res) => {
   const { _id: id } = req.user;
-  const { path: tempUpload, originalname } = req.file;
 
   if (!req.user) {
-    throw HttpError(401)
+    throw HttpError(401);
   }
 
+  const { path: tempUpload, originalname } = req.file;
   const filename = `${id}_${originalname}`;
   const resultUpload = path.resolve(avatarDir, filename);
+
+  const image = await Jimp.read(tempUpload);
+  image.resize(250, 250).write(tempUpload);
+
   await fs.rename(tempUpload, resultUpload);
 
   const avatarURL = path.resolve("avatars", filename);
