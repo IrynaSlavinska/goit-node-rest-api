@@ -98,8 +98,8 @@ export const changeSubType = catchAsync(async (req, res) => {
 export const updateAvatarCtrl = catchAsync(async (req, res) => {
   const { _id: id } = req.user;
 
-  if (!req.user) {
-    throw HttpError(401);
+  if (!req.file) {
+    throw HttpError(400, "Please attach your avatar");
   }
 
   const { path: tempUpload, originalname } = req.file;
@@ -111,8 +111,8 @@ export const updateAvatarCtrl = catchAsync(async (req, res) => {
 
   await fs.rename(tempUpload, resultUpload);
 
-  const avatarURL = path.resolve("avatars", filename);
+  const avatarURL = path.join("avatars", filename);
   await User.findByIdAndUpdate(id, { avatarURL });
 
-  res.status(200).json({ avatarURL, ...req.body });
+  res.json({ avatarURL: avatarURL });
 });
