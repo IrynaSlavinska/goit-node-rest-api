@@ -71,7 +71,7 @@ export const resendVerifyEmailCtrl = catchAsync(async (req, res) => {
     res.status(400).json({ message: "Missing required field email" });
   }
   const user = await User.findOne({ email });
- 
+
   if (user.verify) {
     throw HttpError(400, "Verification has already been passed");
   }
@@ -94,6 +94,10 @@ export const loginCtrl = catchAsync(async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
+  }
+
+  if (!user.verify) {
+    throw HttpError(401, "Email not verified");
   }
 
   const passwordCompare = await bcrypt.compare(password, user.password);
